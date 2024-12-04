@@ -8,17 +8,18 @@
 </head>
 <body>
     <div class="quiz-container">
-        <h1 id="question"></h1>
+        <h1 id="question">{{ question }}</h1>  <!-- Display the question dynamically -->
         <div id="options">
-            <input type="radio" name="option" id="option1"><label for="option1" id="label1"></label><br>
-            <input type="radio" name="option" id="option2"><label for="option2" id="label2"></label><br>
-            <input type="radio" name="option" id="option3"><label for="option3" id="label3"></label><br>
-            <input type="radio" name="option" id="option4"><label for="option4" id="label4"></label><br>
+            <!-- Display the options dynamically -->
+            {% for option in options %}
+                <input type="radio" name="option" value="{{ option }}" id="option{{ loop.index }}">
+                <label for="option{{ loop.index }}">{{ option }}</label><br>
+            {% endfor %}
         </div>
         <button id="submit-btn">Submit</button>
         <div id="score"></div>
     </div>
 
-    <script src="quiz.js"></script>
+    <script src="quiz.js"></script>  <!-- Ensure your JavaScript file is linked properly -->
 </body>
 </html>
