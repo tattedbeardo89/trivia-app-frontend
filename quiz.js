@@ -1,60 +1,66 @@
-const apiUrl = "https://trivia-flask-app.onrender.com";  // Backend URL
+document.addEventListener('DOMContentLoaded', function () {
+    let currentQuestion = 0;
+    let score = 0;
+    let quizData = [];
 
-let currentQuestionIndex = 0;
-let score = 0;
-let quizData = [];
-
-document.addEventListener('DOMContentLoaded', fetchQuizData);
-
-function fetchQuizData() {
-    fetch(`${apiUrl}/quiz_data`)  // Fetch quiz data from your backend
+    // Fetch quiz data from Flask backend
+    fetch('/quiz_data')  // Assuming your backend is serving the quiz data at this route
         .then(response => response.json())
         .then(data => {
             quizData = data;
-            loadQuestion();
+            loadQuestion(currentQuestion);
         })
-        .catch(error => {
-            console.error("Error fetching quiz data:", error);
-            alert("Error fetching quiz data. Please try again.");
+        .catch(error => console.error('Error fetching quiz data:', error));
+
+    // Load the question and options for the current question
+    function loadQuestion(questionIndex) {
+        const questionData = quizData[questionIndex];
+        document.getElementById("question").textContent = questionData.question;
+
+        const options = questionData.options;
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";  // Clear any previous options
+
+        options.forEach((option, index) => {
+            const optionId = `option${index + 1}`;
+            const label = document.createElement("label");
+            label.setAttribute("for", optionId);
+            label.textContent = option;
+
+            const radioButton = document.createElement("input");
+            radioButton.type = "radio";
+            radioButton.name = "option";
+            radioButton.value = option;
+            radioButton.id = optionId;
+
+            optionsContainer.appendChild(radioButton);
+            optionsContainer.appendChild(label);
+            optionsContainer.appendChild(document.createElement("br"));
         });
-}
-
-function loadQuestion() {
-    const questionData = quizData[currentQuestionIndex];
-
-    // Update question text
-    document.getElementById("question").textContent = questionData.question;
-
-    // Update the options
-    const options = questionData.options;
-    for (let i = 0; i < options.length; i++) {
-        document.getElementById(`label${i+1}`).textContent = options[i];
-    }
-}
-
-// Handle the submit button
-document.getElementById("submit-btn").addEventListener("click", checkAnswer);
-
-function checkAnswer() {
-    const selectedOption = document.querySelector('input[name="option"]:checked');
-    if (!selectedOption) {
-        alert("Please select an answer.");
-        return;
     }
 
-    const answer = selectedOption.nextElementSibling.textContent;
-    const correctAnswer = quizData[currentQuestionIndex].answer;
+    // Handle the submit button click event
+    document.getElementById("submit-btn").addEventListener("click", function () {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (!selectedOption) {
+            alert("Please select an option before submitting.");
+            return;
+        }
 
-    if (answer === correctAnswer) {
-        score++;
-    }
+        const selectedAnswer = selectedOption.value;
+        const correctAnswer = quizData[currentQuestion].answer;
 
-    currentQuestionIndex++;
+        if (selectedAnswer === correctAnswer) {
+            score++;
+        }
 
-    if (currentQuestionIndex < quizData.length) {
-        loadQuestion();
-    } else {
-        document.getElementById("score").textContent = `Quiz Complete! Your score: ${score} / ${quizData.length}`;
-        document.getElementById("submit-btn").disabled = true;
-    }
-}
+        currentQuestion++;
+
+        if (currentQuestion < quizData.length) {
+            loadQuestion(currentQuestion);
+        } else {
+            document.getElementById("score").textContent = `Quiz Complete! Your score: ${score} / ${quizData.length}`;
+            document.getElementById("submit-btn").disabled = true;  // Disable submit after quiz is done
+        }
+    });
+});
