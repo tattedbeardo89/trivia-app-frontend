@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let score = 0;
     let quizData = [];
 
-    // Fetch quiz data from Flask backend
-    fetch('/quiz_data')  // Assuming your backend is serving the quiz data at this route
+    // Fetch quiz data from the Flask backend
+    fetch('/quiz_data')  // Assuming your backend is serving quiz data at this route
         .then(response => response.json())
         .then(data => {
             quizData = data;
@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => console.error('Error fetching quiz data:', error));
 
-    // Load the question and options for the current question
+    // Load the current question and options
     function loadQuestion(questionIndex) {
         const questionData = quizData[questionIndex];
         document.getElementById("question").textContent = questionData.question;
 
         const options = questionData.options;
         const optionsContainer = document.getElementById("options");
-        optionsContainer.innerHTML = "";  // Clear any previous options
+        optionsContainer.innerHTML = "";  // Clear previous options
 
         options.forEach((option, index) => {
             const optionId = `option${index + 1}`;
@@ -40,7 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Handle the submit button click event
-    document.getElementById("submit-btn").addEventListener("click", function () {
+    document.getElementById("quiz-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+
         const selectedOption = document.querySelector('input[name="option"]:checked');
         if (!selectedOption) {
             alert("Please select an option before submitting.");
@@ -60,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loadQuestion(currentQuestion);
         } else {
             document.getElementById("score").textContent = `Quiz Complete! Your score: ${score} / ${quizData.length}`;
-            document.getElementById("submit-btn").disabled = true;  // Disable submit after quiz is done
+            document.getElementById("submit-btn").disabled = true;  // Disable submit button after quiz ends
         }
     });
 });
