@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Trivia Quiz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="quiz-container">
+        <h1 id="question">{{ question }}</h1>  <!-- Dynamically displaying the current question -->
+        <form id="quiz-form">
+            <div id="options">
+                <!-- Loop through options and display them dynamically -->
+                {% for option in options %}
+                    <input type="radio" name="option" value="{{ option }}" id="option{{ loop.index }}">
+                    <label for="option{{ loop.index }}">{{ option }}</label><br>
+                {% endfor %}
+            </div>
+            <button type="submit" id="submit-btn">Submit</button>
+        </form>
+        <div id="score"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+</body>
+</html>
